@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { FC } from 'react'
-import AppButton from './AppButton'
+import AppButton from '../AppButton'
 import { LogType } from '@/types'
 
 interface TabNavigatorProps {
@@ -36,24 +36,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     marginVertical: 20,
-    borderTopWidth: 3,
-    borderColor: '#1E90FF'
+    padding: 5,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 30,
+    overflow: 'hidden'
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
   },
   activeTabItem: {
-    borderBottomWidth: 2,
-    borderColor: '#1E90FF'
+    backgroundColor: '#1E90FF',
+    borderRadius: 30
   },
   title: {
     fontSize: 14,
   },
   activeTitle: {
-    color: '#1E90FF',
+    color: 'white',
     fontWeight: '700'
   }
 })
