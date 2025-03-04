@@ -18,7 +18,8 @@ const TabNavigator: FC<TabNavigatorProps> = ({activeTab, setActiveTab}) => {
   return (
     <View style={styles.container}>
       {tabs.map(tab => (
-        <AppButton 
+        <AppButton
+          key={tab.id}
           style={[styles.tabItem, activeTab === tab.id && styles.activeTabItem]}
           titleStyle={[styles.title, activeTab === tab.id && styles.activeTitle]}
           title={tab.title}
