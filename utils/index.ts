@@ -1,0 +1,1 @@
+export {default as getThisMonthLogs} from './getThisMonthLogs';
