@@ -9,18 +9,28 @@ interface AppButtonProps extends TouchableOpacityProps {
 
 const AppButton: FC<AppButtonProps> = ({title, titleStyle, style, ...props}) => {
   return (
-    <Pressable android_ripple={{color: 'rgba(77, 166, 255, 0.1)'}} style={({pressed}) => [styles.button, pressed && Platform.OS === 'ios' && {opacity: 0.5}, style]} {...props}>
-      <Text style={[styles.text, titleStyle]}>{title}</Text>
-    </Pressable>
+    <View style={[styles.container, style]}>
+      <Pressable android_ripple={{color: 'rgba(77, 166, 255, 0.8)'}} style={({pressed}) => [styles.button, pressed && Platform.OS === 'ios' && {opacity: 0.5}]} {...props}>
+        <Text style={[styles.text, titleStyle]}>{title}</Text>
+      </Pressable>
+    </View>
   )
 }
 
 export default AppButton
 
 const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxHeight: 40,
+    overflow: 'hidden',
+  },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     fontSize: 16,
