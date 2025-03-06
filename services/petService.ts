@@ -1,5 +1,5 @@
 import { Pet } from '../types';
-import supabase from './supabaseClient';
+import { supabase, handleSupabaseRequest } from './supabaseClient';
 
 // Mock data for development
 const mockPets: Pet[] = [
@@ -31,19 +31,21 @@ const mockPets: Pet[] = [
 
 export const petService = {
   async getPets(): Promise<Pet[]> {
-    // Simulate API call delay
-    // await new Promise(resolve => setTimeout(resolve, 1000));
-    const {data} = await supabase.from('pets').select('*');
-    return data || [];
+    return await handleSupabaseRequest(supabase.from('pets').select('*'));
   },
 
   async getPetById(id: string): Promise<Pet | null> {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const pet = mockPets.find(p => p.id === id);
-    // const {data} = await supabase.from('pets').select('*').eq('id', id);
-    // console.log('pet data: ', data);
-    return pet || null;
+    const pet = await handleSupabaseRequest(supabase
+      .from('pets')
+      .select(`
+        *,
+        logs_weight:weight_logs (*),
+        logs_bodycondition:body_condition_logs (*),
+        logs_vet_visits:vet_visit_logs (*)
+      `)
+      .eq('id', id)
+      .single());
+    return pet;
   },
 
   async createPet(pet: Omit<Pet, 'id' | 'created_at'>): Promise<Pet> {
