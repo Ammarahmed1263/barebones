@@ -27,6 +27,18 @@ export interface WeightLog {
   date: string;
 }
 
+export const bodyConditionMap: Record<number, string> = {
+  1: "Severely Underweight",
+  2: "Underweight",
+  3: "Slightly Underweight",
+  4: "Lean",
+  5: "Ideal",
+  6: "Slightly Overweight",
+  7: "Overweight",
+  8: "Obese",
+  9: "Severely Obese",
+};
+
 export interface BodyConditionLog {
   date: string;
   id: string;

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { FC } from "react";
 import { BodyConditionLog } from "@/types";
 import formatDate from "@/utils/formatDate";
+import { getBodyConditionLabel } from "@/utils/getBodyConditionLabel";
 
 interface BodyConditionTabProps {
   bodyConditionLogs: BodyConditionLog[];
@@ -12,7 +13,7 @@ const BodyConditionTab: FC<BodyConditionTabProps> = ({ bodyConditionLogs }) => {
     <View style={styles.container}>
       {bodyConditionLogs.map((visit) => (
         <View key={visit.id} style={styles.tableRow}>
-          <Text>Condition: {visit.body_condition}</Text>
+          <Text>Condition: {getBodyConditionLabel(visit.body_condition)}</Text>
           <Text>Date: {formatDate(visit.date)}</Text>
         </View>
       ))}
