@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { FC } from 'react'
 import { WeightLog } from '@/types'
+import formatDate from '@/utils/formatDate'
 
 interface WeightLogsTabProps {
   weightLogs: WeightLog[]
@@ -9,11 +10,10 @@ interface WeightLogsTabProps {
 const WeightLogsTab: FC<WeightLogsTabProps> = ({weightLogs}) => {
   return (
     <View style={styles.container}>
-      <Text>WeightLogsTab</Text>
       {weightLogs.map((visit) => (
-        <View key={visit.id}>
-          <Text>{visit.weight}</Text>
-          <Text>{visit.date}</Text>
+        <View key={visit.id} style={styles.tableRow}>
+          <Text>Weight: {visit.weight}</Text>
+          <Text>Date: {formatDate(visit.date)}</Text>
         </View>
       ))}
     </View>
@@ -25,7 +25,12 @@ export default WeightLogsTab
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center'
+  },
+  tableRow:  {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   }
 })
