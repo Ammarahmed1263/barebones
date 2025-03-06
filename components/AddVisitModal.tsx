@@ -1,5 +1,6 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState } from "react";
 import {
+  ActivityIndicator,
   Modal,
   ModalProps,
   StyleSheet,
@@ -11,6 +12,8 @@ import {
   ViewStyle,
 } from "react-native";
 import AppButton from "./AppButton";
+import AppIcon from "./AppIcon";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface AddVisitModalProps extends ModalProps {
   visible: boolean;
@@ -25,6 +28,17 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
   ...props
 }) => {
   const { width, height } = useWindowDimensions();
+  const [notes, setNotes] = useDebounce("", 2000);
+  const [date, setDate] = useDebounce("", 600);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = () => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      handleClose();
+    }, 2000);
+  };
 
   return (
     <Modal
@@ -50,9 +64,25 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
           ]}
         >
           <Text style={styles.title}>Add new vet visits</Text>
-          <TextInput placeholder="Notes" style={styles.input} multiline />
-          <TextInput placeholder="Date" style={styles.input} />
-          <AppButton onPress={handleClose} title={"Submit"} style={styles.submit} titleStyle={styles.submitTitle}/>
+          <TextInput
+            onChangeText={setNotes}
+            placeholder="Notes"
+            style={[styles.input, styles.notes]}
+            multiline
+            numberOfLines={4}
+          />
+          <TextInput
+            onChangeText={setDate}
+            placeholder="Date"
+            style={styles.input}
+          />
+          <AppIcon onPress={handleSubmit} pressableStyle={styles.submitPressable} style={[styles.submit, isSubmitting && styles.submitLoading]}>
+              {!isSubmitting ? (
+                <Text style={styles.submitTitle}>Submit</Text>
+              ) : (
+                <ActivityIndicator size="small" color="#1E90FF" />
+              )}
+          </AppIcon>
         </View>
       </View>
     </Modal>
@@ -92,14 +122,26 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
+  notes: {
+    height: 100,
+    textAlignVertical: "top",
+  },
   submit: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#1E90FF',
+    width: 90,
+    height: 40,
+    alignSelf: "flex-end",
+    backgroundColor: "#1E90FF",
     borderRadius: 4,
+    marginTop: 16
+  },
+  submitPressable: {
     paddingHorizontal: 20,
-    paddingVertical: 8
+    paddingVertical: 10,  
   },
   submitTitle: {
-    color: 'white',
+    color: "white",
+  },
+  submitLoading: {
+    backgroundColor: "#ccc",
   }
 });

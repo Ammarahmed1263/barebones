@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     padding: 5,
     backgroundColor: '#f5f5f5',
-    borderRadius: 30,
+    borderRadius: 8,
     overflow: 'hidden'
   },
   tabItem: {
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   activeTabItem: {
     backgroundColor: '#1E90FF',
-    borderRadius: 30
+    borderRadius: 4
   },
   title: {
     fontSize: 14,
