@@ -7,32 +7,31 @@ interface AppButtonProps extends PressableProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const AppButton: FC<AppButtonProps> = ({title, titleStyle, style, ...props}) => {
+const AppButton: FC<AppButtonProps> = ({ title, titleStyle, style, ...props }) => {
   return (
-    <View style={[styles.container, style]}>
-      <Pressable android_ripple={{color: 'rgba(77, 166, 255, 0.8)'}} style={({pressed}) => [styles.button, pressed && Platform.OS === 'ios' && {opacity: 0.5}]} {...props}>
-        <Text style={[styles.text, titleStyle]}>{title}</Text>
-      </Pressable>
-    </View>
-  )
-}
+    <Pressable 
+      android_ripple={{ color: 'rgba(77, 166, 255, 0.8)' }} 
+      style={({ pressed }) => [
+        styles.button, 
+        pressed && Platform.OS === 'ios' && { opacity: 0.5 }, 
+        style
+      ]} 
+      {...props}
+    >
+      <Text style={[styles.text, titleStyle]}>{title}</Text>
+    </Pressable>
+  );
+};
 
 export default AppButton
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    maxHeight: 40,
-    overflow: 'hidden',
-  },
   button: {
-    width: '100%',
-    height: '100%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
   text: {
     fontSize: 16,
-  }
-})
+  },
+});
