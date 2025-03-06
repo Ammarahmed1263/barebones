@@ -1,33 +1,26 @@
-import { FlatList, Modal, StyleSheet, Text, TextInput, View } from "react-native";
-import React, { FC, useState } from "react";
-import AppButton from "@/components/AppButton";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import AddVisitModal from "@/components/AddVisitModal";
 import AppIcon from "@/components/AppIcon";
+import EmptyList from "@/components/EmptyList";
 import { Pet, VetVisitLog } from "@/types";
 import formatDate from "@/utils/formatDate";
-import AddVisitModal from "@/components/AddVisitModal";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import React, { FC, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 interface VetVisitLogProps {
-  pet: Pet | null;
+  vetVisitLogs: VetVisitLog[];
   setPet: React.Dispatch<React.SetStateAction<Pet | null>>;
 }
 
-const VetVisitsTab: FC<VetVisitLogProps> = ({ pet, setPet }) => {
+const VetVisitsTab: FC<VetVisitLogProps> = ({ vetVisitLogs, setPet }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  if (!pet) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
-      {!pet.logs_vet_visits || pet.logs_vet_visits?.length === 0 ? (
-        <Text>Oops...no vet visit records</Text>
+      {vetVisitLogs?.length === 0 ? (
+        <EmptyList />
       ) : (
-        pet.logs_vet_visits.map((visit) => (
+        vetVisitLogs.map((visit) => (
           <View key={visit.id} style={styles.visitRecord}>
             <Text>{visit.notes}</Text>
             <Text>Date: {formatDate(visit.date)}</Text>
@@ -48,6 +41,7 @@ export default VetVisitsTab;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: 20,
   },
   visitRecord: {
     flexDirection: "row",
@@ -57,14 +51,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
   },
   addVisit: {
-    position: "absolute",
-    bottom: 70,
-    right: 10,
     width: 60,
-    aspectRatio: 1,
+    aspectRatio: 1 / 1,
     borderRadius: 30,
     overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
+    alignSelf: 'flex-end',
+    marginTop: 12,
   },
 });

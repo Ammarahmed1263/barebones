@@ -17,6 +17,8 @@ import VetVisitsTab from "@/components/profiles/tabs/VetVisitsTab";
 import PetCard from "@/components/profiles/sections/PetCard";
 import LogsTable from "@/components/profiles/sections/LogsTable";
 import HealthStatus from "@/components/profiles/sections/HealthStatus";
+import { petService } from "@/services/petService";
+import EmptyList from "@/components/EmptyList";
 
 type RootStackParamList = {
   SingleProfile: { id: string };
@@ -46,13 +48,13 @@ const mockPet: Pet = {
       id: "1",
       pet_id: "1",
       notes: "the dog condition is perfect",
-      date: "2024-01-25T10:00:00Z",
+      date: "2024-02-25T10:00:00Z",
     },
     {
       id: "2",
       pet_id: "1",
       notes: "needs skin care for itching",
-      date: "2024-02-25T10:00:00Z",
+      date: "2024-01-25T10:00:00Z",
     },
   ],
 };
@@ -62,7 +64,6 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<LogType>("weight");
-  const { height } = useWindowDimensions();
   const [thisMonthLogs, setThisMonthLogs] = useState<{
     latestBodyConditionLog: BodyConditionLog | null;
     latestWeightLog: WeightLog | null;
@@ -70,21 +71,22 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     latestBodyConditionLog: null,
     latestWeightLog: null,
   });
+
   const TABS: Record<LogType, JSX.Element> = {
     weight: <WeightLogsTab weightLogs={pet?.logs_weight || []} />,
     body: (
       <BodyConditionTab bodyConditionLogs={pet?.logs_bodycondition || []} />
     ),
-    vet: <VetVisitsTab pet={pet} setPet={setPet} />,
+    vet: (
+      <VetVisitsTab vetVisitLogs={pet?.logs_vet_visits || []} setPet={setPet} />
+    ),
   };
 
   useEffect(() => {
     (async () => {
       try {
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // await petService.getPetById(id);
-        setPet(mockPet);
+        const pet = await petService.getPetById(id);
+        setPet(pet);
       } finally {
         setLoading(false);
       }
@@ -100,19 +102,17 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   }, [pet]);
 
   if (loading) {
-    return <ActivityIndicator style={styles.loader} size={"large"}/>;
+    return <ActivityIndicator style={styles.loader} size={"large"} />;
   }
 
   if (!pet) {
     return (
-      <View style={styles.container}>
-        <Text>Pet not found</Text>
-      </View>
+      <EmptyList text="Oops...no pet found" />
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}}>
       <PetCard pet={pet} />
 
       <View style={styles.monthSummary}>
@@ -134,10 +134,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
       />
 
       <TabNavigator activeTab={activeTab} setActiveTab={setActiveTab} />
-      <View style={{ minHeight: height * 0.65 }}>
-        {/* add error handling here */}
-        {TABS[activeTab] || null}
-      </View>
+      {TABS[activeTab] || null}
     </ScrollView>
   );
 };
