@@ -1,4 +1,5 @@
 import { BodyConditionLog, WeightLog } from "@/types";
+import formatDate from "@/utils/formatDate";
 import { StyleSheet, View, Text } from "react-native";
 
 const LogsTable = ({
@@ -13,7 +14,7 @@ const LogsTable = ({
     {weightLogs.map((log, index) => (
       <View key={index} style={styles.tableRow}>
         <Text>Weight: {log.weight}kg</Text>
-        <Text>Date: {new Date(log.date).toLocaleDateString()}</Text>
+        <Text>Date: {formatDate(log.date)}</Text>
       </View>
     ))}
   </View>

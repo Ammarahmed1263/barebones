@@ -5,9 +5,18 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Pet, BodyConditionLog, WeightLog } from '../../types';
+import { Pet, BodyConditionLog, WeightLog, LogType } from '../../types';
+import TabNavigator from '@/components/profiles/TabNavigator';
+import {getThisMonthLogs} from '@/utils';
+import WeightLogsTab from '@/components/profiles/tabs/WeightLogsTab';
+import BodyConditionTab from '@/components/profiles/tabs/BodyConditionTab';
+import VetVisitsTab from '@/components/profiles/tabs/VetVisitsTab';
+import PetCard from '@/components/profiles/sections/PetCard';
+import LogsTable from '@/components/profiles/sections/LogsTable';
+import HealthStatus from '@/components/profiles/sections/HealthStatus';
 
 type RootStackParamList = {
   SingleProfile: { id: string };
@@ -32,70 +41,18 @@ const mockPet: Pet = {
     { id: '1', pet_id: '1', body_condition: "3", date: '2024-02-25T10:00:00Z' },
     { id: '2', pet_id: '1', body_condition: "4", date: '2024-01-25T10:00:00Z' },
   ],
-  logs_vet_visits: [],
+  logs_vet_visits: [
+    { id: '1', pet_id: '1', notes: "the dog condition is perfect", date: '2024-01-25T10:00:00Z' },
+    { id: '2', pet_id: '1', notes: "needs skin care for itching", date: '2024-02-25T10:00:00Z' }
+  ],
 };
-
-function getThisMonthLogs(logs_bodycondition: BodyConditionLog[], logs_weight: WeightLog[]) {
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  const latestBodyConditionLog = logs_bodycondition
-    .filter(
-      (log) =>
-        new Date(log.date).getMonth() === currentMonth &&
-        new Date(log.date).getFullYear() === currentYear
-    )
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-  const latestWeightLog = logs_weight
-    .filter(
-      (log) =>
-        new Date(log.date).getMonth() === currentMonth &&
-        new Date(log.date).getFullYear() === currentYear
-    )
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-  return { latestBodyConditionLog, latestWeightLog };
-}
-
-const PetCard = ({ pet }: { pet: Pet }) => (
-  <View style={styles.card}>
-    <Text style={styles.name}>{pet.name}</Text>
-    <Text>Species: {pet.species}</Text>
-    <Text>Age: {pet.age} years</Text>
-  </View>
-);
-
-const LogsTable = ({ 
-  weightLogs, 
-  bodyConditionLogs 
-}: { 
-  weightLogs: WeightLog[], 
-  bodyConditionLogs: BodyConditionLog[] 
-}) => (
-  <View style={styles.table}>
-    <Text style={styles.tableHeader}>Recent Logs</Text>
-    {weightLogs.map((log, index) => (
-      <View key={index} style={styles.tableRow}>
-        <Text>Weight: {log.weight}kg</Text>
-        <Text>Date: {new Date(log.date).toLocaleDateString()}</Text>
-      </View>
-    ))}
-  </View>
-);
-
-const HealthStatus = ({ pet }: { pet: Pet }) => (
-  <View style={styles.healthStatus}>
-    <Text style={styles.tableHeader}>Health Status</Text>
-    <Text>Overall Health: {pet?.logs_weight.length > 3 ? 'Good' : 'Needs More Data'}</Text>
-    <Text>Last Vet Visit: 2 months ago</Text>
-  </View>
-);
 
 export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const { id } = route.params;
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<LogType>('weight');
+  const { height } = useWindowDimensions();
   const [thisMonthLogs, setThisMonthLogs] = useState<{
     latestBodyConditionLog: BodyConditionLog | null;
     latestWeightLog: WeightLog | null;
@@ -103,6 +60,11 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     latestBodyConditionLog: null,
     latestWeightLog: null,
   });
+  const TABS: Record<LogType, JSX.Element> = {
+    weight: <WeightLogsTab weightLogs={pet?.logs_weight || []}/>,
+    body: <BodyConditionTab bodyConditionLogs={pet?.logs_bodycondition || []}/>,
+    vet: <VetVisitsTab pet={pet}  setPet={setPet}/>,
+  };
 
   useEffect(() => {
     const fetchPet = async () => {
@@ -156,6 +118,12 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
         weightLogs={pet.logs_weight} 
         bodyConditionLogs={pet.logs_bodycondition} 
       />
+
+      <TabNavigator activeTab={activeTab} setActiveTab={setActiveTab}/>
+      <View style={{minHeight: height * 0.65}}>
+        {/* add error handling here */}
+        {TABS[activeTab] || null}
+      </View>
     </ScrollView>
   );
 };
@@ -171,42 +139,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  card: {
-    padding: 16,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  table: {
-    marginTop: 16,
-  },
-  tableHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
   monthSummary: {
     padding: 16,
     backgroundColor: '#e6f3ff',
     borderRadius: 8,
     marginBottom: 16,
   },
-  healthStatus: {
-    padding: 16,
-    backgroundColor: '#f0fff0',
-    borderRadius: 8,
-    marginBottom: 16,
+  tableHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
+
 }); 
