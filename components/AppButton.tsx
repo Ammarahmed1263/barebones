@@ -1,7 +1,7 @@
-import { Platform, Pressable, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, TouchableOpacityProps, View, ViewStyle } from 'react-native'
+import { Platform, Pressable, PressableProps, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, TouchableOpacityProps, View, ViewStyle } from 'react-native'
 import React, { FC } from 'react'
 
-interface AppButtonProps extends TouchableOpacityProps {
+interface AppButtonProps extends PressableProps {
   title: string;
   titleStyle?: StyleProp<TextStyle>;
   style?: StyleProp<ViewStyle>;

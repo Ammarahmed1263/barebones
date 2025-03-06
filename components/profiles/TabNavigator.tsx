@@ -23,6 +23,7 @@ const TabNavigator: FC<TabNavigatorProps> = ({activeTab, setActiveTab}) => {
           style={[styles.tabItem, activeTab === tab.id && styles.activeTabItem]}
           titleStyle={[styles.title, activeTab === tab.id && styles.activeTitle]}
           title={tab.title}
+          android_ripple={null}
           onPress={() => setActiveTab(tab.id)} />
       ))}
     </View>
