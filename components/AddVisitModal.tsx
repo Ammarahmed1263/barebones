@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Modal,
   ModalProps,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -102,12 +103,24 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
-    borderWidth: 1,
-    elevation: 10,
+    borderWidth: 2,
     borderColor: "#1E90FF",
     shadowColor: "#1E90FF",
     backgroundColor: "white",
     justifyContent: "space-between",
+    ...Platform.select({
+      android: {
+        elevation: 15,
+      },
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+      }
+    })
   },
   title: {
     fontSize: 22,
