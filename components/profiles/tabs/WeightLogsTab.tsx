@@ -12,7 +12,7 @@ const WeightLogsTab: FC<WeightLogsTabProps> = ({ weightLogs }) => {
   return (
     <View style={styles.container}>
       {weightLogs?.length === 0 ? (
-        <EmptyList text="Oops...no weight records" />
+        <EmptyList text="Sorry...No weight records available" />
       ) : (
         weightLogs.map((visit) => (
           <View key={visit.id} style={styles.tableRow}>

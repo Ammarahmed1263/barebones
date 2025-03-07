@@ -1,10 +1,11 @@
 import AddVisitModal from "@/components/AddVisitModal";
 import AppIcon from "@/components/AppIcon";
 import EmptyList from "@/components/EmptyList";
+import { petService } from "@/services/petService";
 import { Pet, VetVisitLog } from "@/types";
 import formatDate from "@/utils/formatDate";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface VetVisitLogProps {
@@ -22,8 +23,8 @@ const VetVisitsTab: FC<VetVisitLogProps> = ({ vetVisitLogs, setPet }) => {
       ) : (
         vetVisitLogs.map((visit) => (
           <View key={visit.id} style={styles.visitRecord}>
-            <Text>{visit.notes}</Text>
-            <Text>Date: {formatDate(visit.date)}</Text>
+            <Text style={{width: '65%'}}>{visit.notes}</Text>
+            <Text >Date: {formatDate(visit.date)}</Text>
           </View>
         ))
       )}
@@ -46,6 +47,7 @@ const styles = StyleSheet.create({
   visitRecord: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",

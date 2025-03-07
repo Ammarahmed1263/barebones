@@ -25,7 +25,7 @@ export default function App() {
         console.error("Error fetching pets:", error);
       }
     })();
-  }, []);
+  });
 
   if (!pet) {
     return null;

@@ -5,7 +5,7 @@ import React, { FC } from 'react'
 interface EmptyListProps {
   text?: string
 }
-const EmptyList: FC<EmptyListProps> = ({text = "Oops...no vet visit records"}) => {
+const EmptyList: FC<EmptyListProps> = ({text = "Sorry...No vet visit records available"}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{text}</Text>

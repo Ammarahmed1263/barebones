@@ -1,26 +1,29 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React, { FC } from 'react'
-import { MonthSummaryLogs } from '@/types'
-import { getBodyConditionLabel } from '@/utils/getBodyConditionLabel'
+import { View, Text, StyleSheet } from "react-native";
+import React, { FC } from "react";
+import { MonthSummaryLogs } from "@/types";
+import { getBodyConditionLabel } from "@/utils/getBodyConditionLabel";
 
 interface MonthSummaryProps {
-  monthLogs: MonthSummaryLogs  
+  monthLogs: MonthSummaryLogs;
 }
 
-const MonthSummary: FC<MonthSummaryProps> = ({monthLogs}) => {
+const MonthSummary: FC<MonthSummaryProps> = ({ monthLogs }) => {
   return (
     <View style={styles.monthSummary}>
-    <Text style={styles.tableHeader}>This Month's Summary</Text>
-    <Text>
-      Latest Weight: {monthLogs.latestWeightLog?.weight + " kg" || "No weight data"} 
-    </Text>
-    <Text>
-      Body Condition:{" "}
-      {getBodyConditionLabel(monthLogs.latestBodyConditionLog?.body_condition || "No data") }
-    </Text>
-  </View>
-  )
-}
+      <Text style={styles.tableHeader}>This Month's Summary</Text>
+      <Text>
+        Latest Weight: {monthLogs.latestWeightLog?.weight || "No weight data"}{" "}
+        {monthLogs.latestWeightLog?.weight ? "kg" : ""}
+      </Text>
+      <Text>
+        Body Condition:{" "}
+        {getBodyConditionLabel(
+          monthLogs.latestBodyConditionLog?.body_condition || "No data"
+        )}
+      </Text>
+    </View>
+  );
+};
 
 export default MonthSummary;
 
@@ -36,4 +39,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 8,
   },
-})
+});
