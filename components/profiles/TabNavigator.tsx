@@ -40,11 +40,13 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
   },
   activeTabItem: {
     backgroundColor: '#1E90FF',
@@ -52,6 +54,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
+    textAlign: 'center'
   },
   activeTitle: {
     color: 'white',

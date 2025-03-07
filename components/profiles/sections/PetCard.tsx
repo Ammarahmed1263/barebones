@@ -10,7 +10,7 @@ const PetCard: FC<PetCardProps> = ({ pet }) => (
   <View style={styles.card}>
     <Text style={styles.name}>{pet.name}</Text>
     <Text>Species: {pet.species}</Text>
-    <Text>Age: {pet.age} years</Text>
+    <Text>Age: {pet.age} year{Number(pet.age) > 1 ? 's' : ''}</Text>
   </View>
 );
 
