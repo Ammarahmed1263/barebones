@@ -54,3 +54,8 @@ export interface VetVisitLog {
   notes: string | null;
   date: string;
 } 
+
+export interface MonthSummaryLogs {
+  latestBodyConditionLog: BodyConditionLog | null;
+  latestWeightLog: WeightLog | null;
+}

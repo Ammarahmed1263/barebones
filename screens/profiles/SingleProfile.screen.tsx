@@ -8,7 +8,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Pet, BodyConditionLog, WeightLog, LogType } from "../../types";
+import { Pet, BodyConditionLog, WeightLog, LogType, MonthSummaryLogs } from "../../types";
 import TabNavigator from "@/components/profiles/TabNavigator";
 import { getThisMonthLogs } from "@/utils";
 import WeightLogsTab from "@/components/profiles/tabs/WeightLogsTab";
@@ -19,6 +19,7 @@ import LogsTable from "@/components/profiles/sections/LogsTable";
 import HealthStatus from "@/components/profiles/sections/HealthStatus";
 import { petService } from "@/services/petService";
 import EmptyList from "@/components/EmptyList";
+import MonthSummary from "@/components/profiles/sections/MonthSummary";
 
 type RootStackParamList = {
   SingleProfile: { id: string };
@@ -64,10 +65,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<LogType>("weight");
-  const [thisMonthLogs, setThisMonthLogs] = useState<{
-    latestBodyConditionLog: BodyConditionLog | null;
-    latestWeightLog: WeightLog | null;
-  }>({
+  const [thisMonthLogs, setThisMonthLogs] = useState<MonthSummaryLogs>({
     latestBodyConditionLog: null,
     latestWeightLog: null,
   });
@@ -107,7 +105,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
 
   if (!pet) {
     return (
-      <EmptyList text="Oops...no pet found" />
+      <EmptyList text="Sorry...couldn't find your pet" />
     );
   }
 
@@ -115,16 +113,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     <ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}}>
       <PetCard pet={pet} />
 
-      <View style={styles.monthSummary}>
-        <Text style={styles.tableHeader}>This Month's Summary</Text>
-        <Text>
-          Latest Weight: {thisMonthLogs.latestWeightLog?.weight || "No data"} kg
-        </Text>
-        <Text>
-          Body Condition:{" "}
-          {thisMonthLogs.latestBodyConditionLog?.body_condition || "No data"}
-        </Text>
-      </View>
+      <MonthSummary monthLogs={thisMonthLogs} />
 
       <HealthStatus pet={pet} />
 
@@ -149,12 +138,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  monthSummary: {
-    padding: 16,
-    backgroundColor: "#e6f3ff",
-    borderRadius: 8,
-    marginBottom: 16,
   },
   tableHeader: {
     fontSize: 18,
