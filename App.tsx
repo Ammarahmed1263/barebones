@@ -4,6 +4,7 @@ import { SingleProfileScreen } from "./screens/profiles/SingleProfile.screen";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { petService } from "./services/petService";
 import { Pet } from "./types";
+import { StatusBar } from "expo-status-bar";
 
 export type RootStackParamList = {
   SingleProfile: { id: string };
@@ -31,15 +32,18 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="SingleProfile"
-          component={SingleProfileScreen}
-          options={{ title: "Pet Profile" }}
-          initialParams={{ id: pet.id }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <StatusBar style="auto" />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="SingleProfile"
+            component={SingleProfileScreen}
+            options={{ title: "Pet Profile" }}
+            initialParams={{ id: pet.id }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
