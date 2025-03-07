@@ -1,25 +1,18 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  useWindowDimensions,
-} from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Pet, BodyConditionLog, WeightLog, LogType, MonthSummaryLogs } from "../../types";
+import EmptyList from "@/components/EmptyList";
+import HealthStatus from "@/components/profiles/sections/HealthStatus";
+import LogsTable from "@/components/profiles/sections/LogsTable";
+import MonthSummary from "@/components/profiles/sections/MonthSummary";
+import PetCard from "@/components/profiles/sections/PetCard";
 import TabNavigator from "@/components/profiles/TabNavigator";
-import { getThisMonthLogs } from "@/utils";
-import WeightLogsTab from "@/components/profiles/tabs/WeightLogsTab";
 import BodyConditionTab from "@/components/profiles/tabs/BodyConditionTab";
 import VetVisitsTab from "@/components/profiles/tabs/VetVisitsTab";
-import PetCard from "@/components/profiles/sections/PetCard";
-import LogsTable from "@/components/profiles/sections/LogsTable";
-import HealthStatus from "@/components/profiles/sections/HealthStatus";
+import WeightLogsTab from "@/components/profiles/tabs/WeightLogsTab";
 import { petService } from "@/services/petService";
-import EmptyList from "@/components/EmptyList";
-import MonthSummary from "@/components/profiles/sections/MonthSummary";
+import { getThisMonthLogs } from "@/utils";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet } from "react-native";
+import { LogType, MonthSummaryLogs, Pet } from "../../types";
 
 type RootStackParamList = {
   SingleProfile: { id: string };
@@ -28,37 +21,37 @@ type RootStackParamList = {
 type Props = NativeStackScreenProps<RootStackParamList, "SingleProfile">;
 
 // Mock data for development
-const mockPet: Pet = {
-  id: "1",
-  name: "Max",
-  species: "Dog",
-  breed: "Golden Retriever",
-  age: 3,
-  created_at: new Date().toISOString(),
-  owner_id: "123",
-  logs_weight: [
-    { id: "1", pet_id: "1", weight: 25.5, date: "2024-02-25T10:00:00Z" },
-    { id: "2", pet_id: "1", weight: 26.0, date: "2024-01-25T10:00:00Z" },
-  ],
-  logs_bodycondition: [
-    { id: "1", pet_id: "1", body_condition: "3", date: "2024-02-25T10:00:00Z" },
-    { id: "2", pet_id: "1", body_condition: "4", date: "2024-01-25T10:00:00Z" },
-  ],
-  logs_vet_visits: [
-    {
-      id: "1",
-      pet_id: "1",
-      notes: "the dog condition is perfect",
-      date: "2024-02-25T10:00:00Z",
-    },
-    {
-      id: "2",
-      pet_id: "1",
-      notes: "needs skin care for itching",
-      date: "2024-01-25T10:00:00Z",
-    },
-  ],
-};
+// const mockPet: Pet = {
+//   id: "1",
+//   name: "Max",
+//   species: "Dog",
+//   breed: "Golden Retriever",
+//   age: 3,
+//   created_at: new Date().toISOString(),
+//   owner_id: "123",
+//   logs_weight: [
+//     { id: "1", pet_id: "1", weight: 25.5, date: "2024-02-25T10:00:00Z" },
+//     { id: "2", pet_id: "1", weight: 26.0, date: "2024-01-25T10:00:00Z" },
+//   ],
+//   logs_bodycondition: [
+//     { id: "1", pet_id: "1", body_condition: "3", date: "2024-02-25T10:00:00Z" },
+//     { id: "2", pet_id: "1", body_condition: "4", date: "2024-01-25T10:00:00Z" },
+//   ],
+//   logs_vet_visits: [
+//     {
+//       id: "1",
+//       pet_id: "1",
+//       notes: "the dog condition is perfect",
+//       date: "2024-02-25T10:00:00Z",
+//     },
+//     {
+//       id: "2",
+//       pet_id: "1",
+//       notes: "needs skin care for itching",
+//       date: "2024-01-25T10:00:00Z",
+//     },
+//   ],
+// };
 
 export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const { id } = route.params;
@@ -75,9 +68,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     body: (
       <BodyConditionTab bodyConditionLogs={pet?.logs_bodycondition || []} />
     ),
-    vet: (
-      <VetVisitsTab vetVisitLogs={pet?.logs_vet_visits || []} setPet={setPet} />
-    ),
+    vet: <VetVisitsTab pet={pet} setPet={setPet} />,
   };
 
   useEffect(() => {
@@ -104,13 +95,15 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   }
 
   if (!pet) {
-    return (
-      <EmptyList text="Sorry...couldn't find your pet" />
-    );
+    return <EmptyList text="Sorry...couldn't find your pet" />;
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{flexGrow: 1}}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+    >
       <PetCard pet={pet} />
 
       <MonthSummary monthLogs={thisMonthLogs} />

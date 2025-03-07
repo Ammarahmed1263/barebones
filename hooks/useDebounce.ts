@@ -14,9 +14,13 @@ export const useDebounce = (initialValue: string, delay = 500) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
+
+    if (newValue.trim() === '') {
+      return setValue(newValue);
+    }
     
     timeoutRef.current = setTimeout(() => {
-      setValue(newValue);
+      setValue(newValue.trim());
     }, delay);
   }
 

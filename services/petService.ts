@@ -2,32 +2,34 @@ import { Pet } from '../types';
 import { supabase, handleSupabaseRequest } from './supabaseClient';
 
 // Mock data for development
-const mockPets: Pet[] = [
-  {
-    id: '1',
-    name: 'Max',
-    species: 'Dog',
-    breed: 'Golden Retriever',
-    age: 3,
-    created_at: new Date().toISOString(),
-    owner_id: '123',
-    logs_weight: [],
-    logs_bodycondition: [],
-    logs_vet_visits: null
-  },
-  {
-    id: '2',
-    name: 'Luna',
-    species: 'Cat',
-    breed: 'Siamese',
-    age: 2,
-    created_at: new Date().toISOString(),
-    owner_id: '123',
-    logs_weight: [],
-    logs_bodycondition: [],
-    logs_vet_visits: null
-  }
-];
+// const mockPets: Pet[] = [
+//   {
+//     id: '1',
+//     name: 'Max',
+//     species: 'Dog',
+//     breed: 'Golden Retriever',
+//     age: 3,
+//     created_at: new Date().toISOString(),
+//     owner_id: '123',
+//     logs_weight: [],
+//     logs_bodycondition: [],
+//     logs_vet_visits: null
+//   },
+//   {
+//     id: '2',
+//     name: 'Luna',
+//     species: 'Cat',
+//     breed: 'Siamese',
+//     age: 2,
+//     created_at: new Date().toISOString(),
+//     owner_id: '123',
+//     logs_weight: [],
+//     logs_bodycondition: [],
+//     logs_vet_visits: null
+//   }
+// ];
+
+const petFields = ['name', 'species', 'breed', 'age', 'owner_id'];
 
 export const petService = {
   async getPets(): Promise<Pet[]> {
@@ -49,35 +51,41 @@ export const petService = {
   },
 
   async createPet(pet: Omit<Pet, 'id' | 'created_at'>): Promise<Pet> {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const newPet: Pet = {
-      ...pet,
-      id: Math.random().toString(36).substr(2, 9),
-      created_at: new Date().toISOString()
-    };
-    mockPets.push(newPet);
-    return newPet;
+    return await handleSupabaseRequest(supabase.from('pets').insert(pet));
   },
 
   async updatePet(id: string, updates: Partial<Pet>): Promise<Pet> {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const index = mockPets.findIndex(p => p.id === id);
-    if (index === -1) {
-      throw new Error('Pet not found');
+    const petUpdates: Partial<Pet> = {};
+    for (const key of petFields) {
+      if (key in updates) {
+        petUpdates[key as keyof Pet] = updates[key as keyof Pet];
+      }
     }
-    mockPets[index] = { ...mockPets[index], ...updates };
-    return mockPets[index];
+
+    if (Object.keys(petUpdates).length > 0) {
+      await handleSupabaseRequest(supabase
+        .from('pets')
+        .update(petUpdates)
+        .eq('id', id))
+    }
+
+    if (updates.logs_vet_visits) {
+      const vetVisits = updates.logs_vet_visits.map((log) => ({
+        pet_id: id,
+        notes: log.notes,
+        date: log.date,
+      }));
+
+      await handleSupabaseRequest(supabase
+        .from('vet_visit_logs')
+        .insert(vetVisits))
+    }
+
+    const updatedPet = await this.getPetById(id);
+    return updatedPet!;
   },
 
   async deletePet(id: string): Promise<void> {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const index = mockPets.findIndex(p => p.id === id);
-    if (index === -1) {
-      throw new Error('Pet not found');
-    }
-    mockPets.splice(index, 1);
+    return await handleSupabaseRequest(supabase.from('pets').delete().eq('id', id));
   }
 }; 

@@ -9,19 +9,19 @@ import React, { FC, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface VetVisitLogProps {
-  vetVisitLogs: VetVisitLog[];
+  pet: Pet | null;
   setPet: React.Dispatch<React.SetStateAction<Pet | null>>;
 }
 
-const VetVisitsTab: FC<VetVisitLogProps> = ({ vetVisitLogs, setPet }) => {
+const VetVisitsTab: FC<VetVisitLogProps> = ({ pet, setPet }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.container}>
-      {vetVisitLogs?.length === 0 ? (
+      {!pet || !pet.logs_vet_visits || pet.logs_vet_visits?.length === 0 ? (
         <EmptyList />
       ) : (
-        vetVisitLogs.map((visit) => (
+        pet.logs_vet_visits.map((visit) => (
           <View key={visit.id} style={styles.visitRecord}>
             <Text style={{width: '65%'}}>{visit.notes}</Text>
             <Text >Date: {formatDate(visit.date)}</Text>
@@ -32,7 +32,7 @@ const VetVisitsTab: FC<VetVisitLogProps> = ({ vetVisitLogs, setPet }) => {
         <Ionicons name="add" size={30} color="white" />
       </AppIcon>
 
-      <AddVisitModal visible={modalVisible} handleClose={() => setModalVisible(false)} />
+      <AddVisitModal pet={pet} setPet={setPet} visible={modalVisible} handleClose={() => setModalVisible(false)} />
     </View>
   );
 };
