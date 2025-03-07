@@ -3,6 +3,7 @@ import React, { FC } from "react";
 import { BodyConditionLog } from "@/types";
 import formatDate from "@/utils/formatDate";
 import { getBodyConditionLabel } from "@/utils/getBodyConditionLabel";
+import EmptyList from "@/components/EmptyList";
 
 interface BodyConditionTabProps {
   bodyConditionLogs: BodyConditionLog[];
@@ -11,12 +12,18 @@ interface BodyConditionTabProps {
 const BodyConditionTab: FC<BodyConditionTabProps> = ({ bodyConditionLogs }) => {
   return (
     <View style={styles.container}>
-      {bodyConditionLogs.map((visit) => (
-        <View key={visit.id} style={styles.tableRow}>
-          <Text>Condition: {getBodyConditionLabel(visit.body_condition)}</Text>
-          <Text>Date: {formatDate(visit.date)}</Text>
-        </View>
-      ))}
+      {bodyConditionLogs?.length === 0 ? (
+        <EmptyList text="Oops...no body condition records" />
+      ) : (
+        bodyConditionLogs.map((visit) => (
+          <View key={visit.id} style={styles.tableRow}>
+            <Text>
+              Condition: {getBodyConditionLabel(visit.body_condition)}
+            </Text>
+            <Text>Date: {formatDate(visit.date)}</Text>
+          </View>
+        ))
+      )}
     </View>
   );
 };
@@ -27,11 +34,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  tableRow:  {
+  tableRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-  }
+  },
 });
