@@ -17,7 +17,8 @@ import {
 import AppIcon from "./AppIcon";
 import DatePicker from "@dietime/react-native-date-picker";
 import { petService } from "@/services/petService";
-import { Pet } from "@/types";
+import { bodyConditionMap, Pet } from "@/types";
+import { Picker } from "@react-native-picker/picker";
 
 interface AddVisitModalProps extends ModalProps {
   visible: boolean;
@@ -37,16 +38,39 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
 }) => {
   const { width, height } = useWindowDimensions();
   const [notes, setNotes] = useDebounce("", 700);
+  const [weight, setWeight] = useDebounce("", 700);
   const [date, setDate] = useState<Date>(new Date());
+  const [bodyCondition, setBodyCondition] = useState<string>("1");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  console.log(
+    "is debouncing: ",
+    notes,
+    weight
+  );
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     Keyboard.dismiss();
     try {
       if (pet) {
-        console.log('date here: ', date.toLocaleDateString())
         const updatedPet = await petService.updatePet(pet?.id, {
+          logs_weight: [
+            {
+              weight,
+              date: date.toISOString(),
+              id: "",
+              pet_id: pet.id,
+            },
+          ],
+          logs_bodycondition: [
+            {
+              body_condition: bodyConditionMap[Number(bodyCondition)],
+              date: date.toISOString(),
+              id: "",
+              pet_id: pet.id,
+            },
+          ],
           logs_vet_visits: [
             {
               notes,
@@ -56,15 +80,23 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
             },
           ],
         });
-
+        console.log("update pets: ", updatedPet);
         setPet(updatedPet);
       }
     } catch (error) {
       console.error("error adding new visit", error);
     } finally {
       setIsSubmitting(false);
+
       handleClose();
     }
+  };
+
+  const handleDismiss = () => {
+    Keyboard.dismiss();
+    setNotes("");
+    setWeight("");
+    handleClose();
   };
 
   return (
@@ -72,11 +104,11 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
       animationType="fade"
       visible={visible}
       transparent
-      onRequestClose={handleClose}
+      onRequestClose={handleDismiss}
       {...props}
     >
       <View style={styles.modalOverlay}>
-        <TouchableWithoutFeedback onPress={handleClose}>
+        <TouchableWithoutFeedback onPress={handleDismiss}>
           <View style={{ ...StyleSheet.absoluteFillObject }} />
         </TouchableWithoutFeedback>
         <View
@@ -84,7 +116,6 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
             styles.modalBody,
             {
               width: width * 0.9,
-              maxHeight: height * 0.5,
               minHeight: height * 0.3,
             },
             viewStyle,
@@ -93,11 +124,37 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
           <Text style={styles.title}>Add new vet visits</Text>
           <TextInput
             onChangeText={setNotes}
-            placeholder="Notes"
+            placeholder="Notes(required)"
             style={[styles.input, styles.notes]}
             multiline
             numberOfLines={4}
           />
+
+          <View style={styles.weightContainer}>
+            <TextInput
+              onChangeText={setWeight}
+              placeholder="weight(required)"
+              keyboardType="numeric"
+              style={[styles.input, { flex: 1, marginBottom: 0 }]}
+            />
+
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={bodyCondition}
+                onValueChange={(itemValue) => setBodyCondition(itemValue)}
+                mode="dropdown"
+              >
+                {Object.entries(bodyConditionMap).map(([label, value]) => (
+                  <Picker.Item
+                    key={label}
+                    label={value + ` (${label})`}
+                    value={label}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+
           <DatePicker
             value={date}
             onChange={(value) => setDate(value)}
@@ -112,9 +169,10 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
             pressableStyle={styles.submitPressable}
             style={[
               styles.submit,
-              (isSubmitting || !notes.length) && styles.submitInActive,
+              (isSubmitting || !notes.length || !weight.length) &&
+                styles.submitInActive,
             ]}
-            disabled={isSubmitting || !notes.length}
+            disabled={isSubmitting || !notes.length || !weight.length}
           >
             {!isSubmitting ? (
               <Text style={styles.submitTitle}>Submit</Text>
@@ -184,6 +242,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#1E90FF",
     borderRadius: 4,
     marginTop: 16,
+  },
+  weightContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginBottom: 20,
+  },
+  pickerContainer: {
+    width: "70%",
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   submitPressable: {
     paddingHorizontal: 20,

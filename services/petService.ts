@@ -81,6 +81,36 @@ export const petService = {
         .insert(vetVisits))
     }
 
+    if (updates.logs_weight) {
+      const weightLogs = updates.logs_weight.map((log) => ({
+        pet_id: id,
+        weight: log.weight,
+        date: log.date,
+      }));
+      const { error: weightError } = await supabase
+        .from('weight_logs')
+        .insert(weightLogs);
+
+      if (weightError) {
+        throw new Error(`Failed to insert weight logs: ${weightError.message}`);
+      }
+    }
+
+    if (updates.logs_bodycondition) {
+      const bodyConditionLogs = updates.logs_bodycondition.map((log) => ({
+        pet_id: id,
+        body_condition: log.body_condition,
+        date: log.date,
+      }));
+      const { error: bodyError } = await supabase
+        .from('body_condition_logs')
+        .insert(bodyConditionLogs);
+
+      if (bodyError) {
+        throw new Error(`Failed to insert body condition logs: ${bodyError.message}`);
+      }
+    }
+
     const updatedPet = await this.getPetById(id);
     return updatedPet!;
   },
