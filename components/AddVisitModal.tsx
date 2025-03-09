@@ -50,7 +50,7 @@ const AddVisitModal: FC<AddVisitModalProps> = ({
           logs_vet_visits: [
             {
               notes,
-              date: date.toLocaleString(),
+              date: date.toISOString(),
               id: "",
               pet_id: pet.id,
             },
